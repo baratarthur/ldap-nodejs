@@ -48,14 +48,28 @@ routes.post('/usuarios', async (req, res) => {
     if (!dn||!entry) {
       res.status(400).json({Error: 'Parâmetro obrigatório não informado!'})
     } else {
-      const ldap = await new Ldap(user, password)
+      const ldap = new Ldap(user, password)
       const criar = await ldap.add(dn, entry)
-      console.log(`Criar: ${criar}`)
-      res.status(201).json(criar)
+      res.status(201).json({'Usuário criado': criar})
     }
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
+  }
+})
+
+routes.delete('/usuarios', (req, res) => {
+  try {
+    const { user, password, dn } = req.body;
+    if (!dn) {
+      res.status(400).json({Error: 'Parâmetro obrigatório não informado!'})
+    } else {
+      const ldap = new Ldap(user, password)
+      const del = ldap.del(dn)
+      res.status(200).send('Usuário deletado com sucesso!')
+    }
+  } catch (error) {
+    console.log(`Error in route delete user: ${error}`)
   }
 })
 

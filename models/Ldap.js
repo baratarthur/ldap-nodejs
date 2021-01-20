@@ -26,16 +26,30 @@ class Ldap {
 
   async add(dn, entry) {
     return await new Promise((resolve, reject) => {
-      const addUser = this.client.add(dn, entry, err => {
+      const addUser = this.client.add(dn, entry, (err) => {
         try {
           if (err) {
-            console.log(`Error: ${err}`)
+            console.log(`Error create user: ${err}`)
           } else {
-            console.log(addUser)
             resolve(addUser)
           }
         } catch (error) {
-          console.log(error)
+          reject(error)
+        }
+      })
+    })
+  }
+
+  del(dn) {
+    return new Promise((resolve, reject) => {
+      const delUser = this.client.del(dn, (err) => {
+        try {
+          if (err) {
+            console.log(`Error delete user: ${err}`)
+          } else {
+            resolve(delUser)
+          }
+        } catch (error) {
           reject(error)
         }
       })
@@ -47,9 +61,8 @@ class Ldap {
       this.client.search(base, options, (err, res) => {
         try {
           const entries = [];
-          res.on('searchEntry', async function(entry) {
-            const memberOf = await JSON.parse(entry);
-            entries.push(memberOf);
+          res.on('searchEntry', (entry) => {
+            entries.push(entry);
           });
           res.on('searchReference', function(referral) {
             console.log('referral: ' + referral.uris.join());
