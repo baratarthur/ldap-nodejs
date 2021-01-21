@@ -62,7 +62,8 @@ class Ldap {
         try {
           const entries = [];
           res.on('searchEntry', (entry) => {
-            entries.push(entry);
+            const data = entry.toString()
+            entries.push(data);
           });
           res.on('searchReference', function(referral) {
             console.log('referral: ' + referral.uris.join());
